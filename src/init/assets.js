@@ -39,6 +39,6 @@ export const loadGameAssets = async () => {
   }
 };
 
-export const getGameAsset = () => {
+export const getGameAssets = () => {
   return gameAssets;
 };
