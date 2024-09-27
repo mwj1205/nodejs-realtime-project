@@ -1,12 +1,12 @@
 // 유저는 스테이지를 하나 씩 올라갈 수 있다. (1 -> 2, 2 -> 3)
 // 유저는 일정 점수가 되면 다음 스테이지로 이동한다.
 
-import { getGameAssets } from '../init/assets';
-import { getStage, setStage } from '../models/stage.model';
+import { getGameAssets } from '../init/assets.js';
+import { getStage, setStage } from '../models/stage.model.js';
 
 export const moveStageHander = (uuid, payload) => {
   // 유저의 현재 스테이지 정보
-  let currentStages = getStage(userId);
+  let currentStages = getStage(uuid);
   if (!currentStages.length) {
     return { status: 'fail', message: 'No stages found for user' };
   }
@@ -26,7 +26,8 @@ export const moveStageHander = (uuid, payload) => {
 
   // 1스테이지 -> 2스테이지로 넘어가는 가정
   // 5 => 임의로 정한 오차 범위
-  if (elapsedTime < 100 || elapsedTime > 105) {
+  console.log('elapsedTime: ', elapsedTime);
+  if (elapsedTime < 4.95 || elapsedTime > 5.5) {
     return { status: 'fail', message: 'Invalid elapsed time' };
   }
 
@@ -38,6 +39,6 @@ export const moveStageHander = (uuid, payload) => {
 
   // todo: stage를 넘어가기 위한 점수가 되었나? 검증
 
-  setStage(userId, payload.targetStage, serverTime);
+  setStage(uuid, payload.targetStage, serverTime);
   return { status: 'success' };
 };

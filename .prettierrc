@@ -8,5 +8,13 @@
   "arrowParens": "always",
   "orderedImports": true,
   "bracketSpacing": true,
-  "jsxBracketSameLine": false
+  "jsxBracketSameLine": false,
+  "overrides": [
+    {
+      "files": "*.js",
+      "options": {
+        "importOrder": [".js$"]
+      }
+    }
+  ]
 }

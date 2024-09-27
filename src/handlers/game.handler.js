@@ -1,9 +1,12 @@
-import { getStage } from '../models/stage.model';
+import { getGameAssets } from '../init/assets.js';
+import { clearStage, getStage, setStage } from '../models/stage.model.js';
 
 export const gameStart = (uuid, payload) => {
-  const { stages } = getGameAssets;
+  const { stages } = getGameAssets();
   // stage 배열에서 0번째 = 첫번째 스테이지
   // todo: timestamp 검증
+
+  clearStage(uuid);
   setStage(uuid, stages.data[0].id, payload.timestamp);
   console.log('stage: ', getStage(uuid));
 

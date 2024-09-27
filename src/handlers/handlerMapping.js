@@ -1,5 +1,5 @@
-import { gameEnd, gameStart } from './game.handler';
-import { moveStageHander } from './stage.handler';
+import { gameEnd, gameStart } from './game.handler.js';
+import { moveStageHander } from './stage.handler.js';
 
 const handlerMappings = {
   2: gameStart,
