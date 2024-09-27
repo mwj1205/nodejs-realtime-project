@@ -1,7 +1,10 @@
+import { gameEnd, gameStart } from './game.handler';
 import { moveStageHander } from './stage.handler';
 
-const handerMappings = {
+const handlerMappings = {
+  2: gameStart,
+  3: gameEnd,
   11: moveStageHander,
 };
 
-export default handerMappings;
+export default handlerMappings;
