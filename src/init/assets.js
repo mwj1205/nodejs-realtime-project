@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 // 이 파일의 위치의 파일 이름을 제외한 경로
 const __dirname = path.dirname(__filename);
 // 최상위 경로 + assets 폴더
-const basePath = path.join(__dirname, '../../assets');
+const basePath = path.join(__dirname, '../../public/assets');
 
 // 파일 읽는 함수
 // 비동기 병렬로 파일을 읽는다.

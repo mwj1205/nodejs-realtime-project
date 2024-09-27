@@ -6,6 +6,10 @@ import ItemController from './ItemController.js';
 import './socket.js';
 import { sendEvent } from './socket.js';
 
+import itemData from './assets/item.json' with { type: 'json' };
+import stageData from './assets/stage.json' with { type: 'json' };
+import itemUnlockData from './assets/item_unlock.json' with { type: 'json' };
+
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
@@ -105,7 +109,7 @@ function createSprites() {
 
   itemController = new ItemController(ctx, itemImages, scaleRatio, GROUND_SPEED);
 
-  score = new Score(ctx, scaleRatio);
+  score = new Score(ctx, scaleRatio, stageData);
 }
 
 function getScaleRatio() {
@@ -215,6 +219,8 @@ function gameLoop(currentTime) {
     gameover = true;
     score.setHighScore();
     setupGameReset();
+
+    sendEvent(3, { timestamp: Date.now(), score: Math.floor(score.score) });
   }
   const collideWithItem = itemController.collideWith(player);
   if (collideWithItem && collideWithItem.itemId) {
