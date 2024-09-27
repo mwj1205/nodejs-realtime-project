@@ -13,32 +13,35 @@ export const gameStart = (uuid, payload) => {
   return { status: 'success' };
 };
 
-export const gameEnd = () => {
+export const gameEnd = (uuid, payload) => {
   // 클라이언트는 게임 종료 시 타임스탬프와 총 점수 줄거임
   const { timestamp: gameEndTime, score } = payload;
-  const stages = getStage(uuid);
+  const { stages } = getGameAssets();
+  const userstages = getStage(uuid);
 
-  if (!stages.length) {
+  if (!userstages.length) {
     return { status: 'fail', message: 'No stages found for user' };
   }
 
   // 각 스테이지의 지속시간을 계산하여 총 점수 계산
   let totalScore = 0;
 
-  stages.foreach((stage, index) => {
+  userstages.forEach((stage, index) => {
     let stageEndTime;
-    if (index === stages.length - 1) {
+    let currentStageData = stages.data[index];
+    if (index === userstages.length - 1) {
       stageEndTime = gameEndTime;
     } else {
-      stageEndTime = stages[index + 1].timestamp;
+      stageEndTime = userstages[index + 1].timestamp;
     }
 
-    const stageDuration = (stageEndTime - stage.timestamp) / 1000;
-    totalScore += stageDuration; // 1초당 1점
+    const stageDuration = (stageEndTime - stage.timestamp) / 100;
+    totalScore += stageDuration * currentStageData.scorePerSecond; // 1초당 1점
   });
 
   // 점수와 타임스탬프 검증
   // 오차범위 5
+  console.log('totalScore: ', totalScore);
   if (Math.abs(score - totalScore) > 5) {
     return { status: 'fail', message: 'Score verification failed' };
   }

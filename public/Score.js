@@ -3,22 +3,40 @@ import { sendEvent } from './socket.js';
 class Score {
   score = 0;
   HIGH_SCORE_KEY = 'highScore';
-  stageChange = true;
+  currentStageIndex = 0; // 현재 스테이지 인덱스
+  stages = []; // 모든 스테이지의 데이터
+  currentStage = null; // 현재 스테이지의 데이터
+  nextStage = null; // 다음 스테이지의 데이터
 
-  constructor(ctx, scaleRatio) {
+  constructor(ctx, scaleRatio, stageData) {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
+    this.stages = stageData.data;
+    this.updateStage();
+  }
+
+  updateStage() {
+    this.currentStage = this.stages[this.currentStageIndex];
+    // nextStage는 currentStage가 마지막 스테이지면 null
+    // 아니면 currentStageIndex + 1
+    this.nextStage =
+      this.currentStageIndex < this.stages.length - 1
+        ? this.stages[this.currentStageIndex + 1]
+        : null;
   }
 
   update(deltaTime) {
-    this.score += deltaTime * 0.001;
-    // 점수가 100점 이상이 될 시 서버에 메세지 전송
-    console.log(this.score);
-    console.log('this.stageChange: ', this.stageChange);
-    if (Math.floor(this.score) === 5 && this.stageChange) {
-      this.stageChange = false;
-      sendEvent(11, { currentStage: 1000, targetStage: 1001 });
+    this.score += deltaTime * 0.01 * this.currentStage.scorePerSecond;
+
+    if (this.nextStage && this.score >= this.nextStage.score) {
+      sendEvent(11, {
+        currentStage: this.currentStage.id,
+        targetStage: this.nextStage ? this.nextStage.id : this.currentStage.id,
+        score: this.score,
+      });
+      this.currentStageIndex++;
+      this.updateStage();
     }
   }
 
@@ -28,6 +46,8 @@ class Score {
 
   reset() {
     this.score = 0;
+    this.currentStageIndex = 0;
+    this.updateStage();
   }
 
   setHighScore() {

@@ -4,7 +4,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { getStage, setStage } from '../models/stage.model.js';
 
-export const moveStageHander = (uuid, payload) => {
+export const moveStageHandler = (uuid, payload) => {
   // 유저의 현재 스테이지 정보
   let currentStages = getStage(uuid);
   if (!currentStages.length) {
@@ -14,28 +14,24 @@ export const moveStageHander = (uuid, payload) => {
   // 오름차순 -> 가장 큰 스테이지 ID를 확인 <- 유저의 현재 스테이지
   currentStages.sort((a, b) => a.id - b.id);
   const currentStage = currentStages[currentStages.length - 1];
+  //console.log('currentStage: ', currentStage);
 
   // 클라이언트 vs 서버 비교
   if (payload.currentStage !== currentStage.id) {
     return { status: 'fail', message: 'Current Stage mismatch' };
   }
 
+  // targetStage 대한 검증 <- 게임 에셋에 존재하는가?
+  const { stages } = getGameAssets();
+  const currentStageData = stages.data.find((stage) => stage.id === currentStage.id);
+  const targetStageData = stages.data.find((stage) => stage.id === payload.targetStage);
+  if (!targetStageData) {
+    return { status: 'fail', message: 'Target stage not found' };
+  }
+
   // 점수 검증
   const serverTime = Date.now(); // 현재 타임스탬프
   const elapsedTime = (serverTime - currentStage.timestamp) / 1000;
-
-  // 1스테이지 -> 2스테이지로 넘어가는 가정
-  // 5 => 임의로 정한 오차 범위
-  console.log('elapsedTime: ', elapsedTime);
-  if (elapsedTime < 4.95 || elapsedTime > 5.5) {
-    return { status: 'fail', message: 'Invalid elapsed time' };
-  }
-
-  // targetStage 대한 검증 <- 게임 에셋에 존재하는가?
-  const { stages } = getGameAssets();
-  if (!stages.data.some((stage) => stage.id === payload.targetStage)) {
-    return { status: 'fail', message: 'Target stage not found' };
-  }
 
   // todo: stage를 넘어가기 위한 점수가 되었나? 검증
 
