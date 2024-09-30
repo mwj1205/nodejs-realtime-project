@@ -61,6 +61,10 @@ class Score {
     return this.score;
   }
 
+  getCurrentStageId() {
+    return this.currentStage.id;
+  }
+
   draw() {
     const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
     const y = 20 * this.scaleRatio;

@@ -109,7 +109,7 @@ function createSprites() {
     };
   });
 
-  itemController = new ItemController(ctx, itemImages, scaleRatio, GROUND_SPEED);
+  itemController = new ItemController(ctx, itemImages, scaleRatio, GROUND_SPEED, itemUnlockData);
 
   score = new Score(ctx, scaleRatio, stageData);
 }
@@ -169,6 +169,7 @@ function reset() {
 
   ground.reset();
   cactiController.reset();
+  itemController.reset();
   score.reset();
   gameSpeed = GAME_SPEED_START;
   sendEvent(2, { timestamp: Date.now() });
@@ -209,7 +210,7 @@ function gameLoop(currentTime) {
     ground.update(gameSpeed, deltaTime);
     // 선인장
     cactiController.update(gameSpeed, deltaTime);
-    itemController.update(gameSpeed, deltaTime);
+    itemController.update(gameSpeed, deltaTime, score.getCurrentStageId());
     // 달리기
     player.update(gameSpeed, deltaTime);
     updateGameSpeed(deltaTime);
