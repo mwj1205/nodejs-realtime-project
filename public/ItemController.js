@@ -1,90 +1,109 @@
-import Item from "./Item.js";
+import Item from './Item.js';
 
 class ItemController {
+  INTERVAL_MIN = 0;
+  INTERVAL_MAX = 12000;
 
-    INTERVAL_MIN = 0;
-    INTERVAL_MAX = 12000;
+  nextInterval = null;
+  items = [];
+  appearItems = [];
+  currentStageId = null;
 
-    nextInterval = null;
-    items = [];
+  constructor(ctx, itemImages, scaleRatio, speed, itemUnlockData) {
+    this.ctx = ctx;
+    this.canvas = ctx.canvas;
+    this.itemImages = itemImages;
+    this.scaleRatio = scaleRatio;
+    this.speed = speed;
+    this.itemUnlockData = itemUnlockData.data;
 
+    this.setNextItemTime();
+  }
 
-    constructor(ctx, itemImages, scaleRatio, speed) {
-        this.ctx = ctx;
-        this.canvas = ctx.canvas;
-        this.itemImages = itemImages;
-        this.scaleRatio = scaleRatio;
-        this.speed = speed;
+  setNextItemTime() {
+    this.nextInterval = this.getRandomNumber(this.INTERVAL_MIN, this.INTERVAL_MAX);
+  }
 
-        this.setNextItemTime();
-    }
+  getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 
-    setNextItemTime() {
-        this.nextInterval = this.getRandomNumber(
-            this.INTERVAL_MIN,
-            this.INTERVAL_MAX
-        );
-    }
+  updateAppearItems(newStageId) {
+    if (this.currentStageId !== newStageId) {
+      this.currentStageId = newStageId;
+      const newItems = this.itemUnlockData
+        .filter((item) => item.stage_id === this.currentStageId)
+        .map((item) => item.item_id);
 
-    getRandomNumber(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-
-    createItem() {
-        const index = this.getRandomNumber(0, this.itemImages.length - 1);
-        const itemInfo = this.itemImages[index];
-        const x = this.canvas.width * 1.5;
-        const y = this.getRandomNumber(
-            10,
-            this.canvas.height - itemInfo.height
-        );
-
-        const item = new Item(
-            this.ctx,
-            itemInfo.id,
-            x,
-            y,
-            itemInfo.width,
-            itemInfo.height,
-            itemInfo.image
-        );
-
-        this.items.push(item);
-    }
-
-
-    update(gameSpeed, deltaTime) {
-        if(this.nextInterval <= 0) {
-            this.createItem();
-            this.setNextItemTime();
+      newItems.forEach((itemId) => {
+        if (!this.appearItems.includes(itemId)) {
+          this.appearItems.push(itemId);
         }
+      });
+    }
+  }
 
-        this.nextInterval -= deltaTime;
+  createItem() {
+    if (this.appearItems.length === 0) return;
 
-        this.items.forEach((item) => {
-            item.update(this.speed, gameSpeed, deltaTime, this.scaleRatio);
-        })
+    const appearItemsIndices = this.itemImages
+      .filter((item) => this.appearItems.includes(item.id))
+      .map((_, index) => index);
 
-        this.items = this.items.filter(item => item.x > -item.width);
+    const index = this.getRandomNumber(0, this.appearItems.length - 1);
+    const itemIndex = appearItemsIndices[index];
+    const itemInfo = this.itemImages[itemIndex];
+    const x = this.canvas.width * 1.5;
+    const y = this.getRandomNumber(10, this.canvas.height - itemInfo.height);
+
+    const item = new Item(
+      this.ctx,
+      itemInfo.id,
+      x,
+      y,
+      itemInfo.width,
+      itemInfo.height,
+      itemInfo.image,
+    );
+
+    this.items.push(item);
+  }
+
+  update(gameSpeed, deltaTime, nowStage) {
+    this.updateAppearItems(nowStage);
+    if (this.nextInterval <= 0) {
+      this.createItem();
+      this.setNextItemTime();
     }
 
-    draw() {
-        this.items.forEach((item) => item.draw());
-    }
+    this.nextInterval -= deltaTime;
 
-    collideWith(sprite) {
-        const collidedItem = this.items.find(item => item.collideWith(sprite))
-        if (collidedItem) {
-            this.ctx.clearRect(collidedItem.x, collidedItem.y, collidedItem.width, collidedItem.height)
-            return {
-                itemId: collidedItem.id
-            }
-        }
-    }
+    this.items.forEach((item) => {
+      item.update(this.speed, gameSpeed, deltaTime, this.scaleRatio);
+    });
 
-    reset() {
-        this.items = [];
+    this.items = this.items.filter((item) => item.x > -item.width);
+  }
+
+  draw() {
+    this.items.forEach((item) => item.draw());
+  }
+
+  collideWith(sprite) {
+    const collidedItem = this.items.find((item) => item.collideWith(sprite));
+    if (collidedItem) {
+      this.ctx.clearRect(collidedItem.x, collidedItem.y, collidedItem.width, collidedItem.height);
+      return {
+        itemId: collidedItem.id,
+      };
     }
+  }
+
+  reset() {
+    this.items = [];
+    this.appearItems = [];
+    this.currentStageId = null;
+  }
 }
 
 export default ItemController;

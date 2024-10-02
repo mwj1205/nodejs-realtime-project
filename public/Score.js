@@ -7,13 +7,19 @@ class Score {
   stages = []; // 모든 스테이지의 데이터
   currentStage = null; // 현재 스테이지의 데이터
   nextStage = null; // 다음 스테이지의 데이터
+  itemScores = {};
 
-  constructor(ctx, scaleRatio, stageData) {
+  constructor(ctx, scaleRatio, stageData, itemData) {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
     this.stages = stageData.data;
+    this.items = itemData.data;
     this.updateStage();
+
+    itemData.data.forEach((item) => {
+      this.itemScores[item.id] = item.score;
+    });
   }
 
   updateStage() {
@@ -41,7 +47,12 @@ class Score {
   }
 
   getItem(itemId) {
-    this.score += 0;
+    if (this.itemScores[itemId]) {
+      this.score += this.itemScores[itemId];
+      console.log(`itemId: ${itemId}, Score: ${this.itemScores[itemId]}`);
+    } else {
+      console.warn(`Unknown item ID: ${itemId}`);
+    }
   }
 
   reset() {
@@ -59,6 +70,10 @@ class Score {
 
   getScore() {
     return this.score;
+  }
+
+  getCurrentStageId() {
+    return this.currentStage.id;
   }
 
   draw() {

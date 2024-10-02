@@ -45,6 +45,8 @@ const ITEM_CONFIG = [
   { width: 50 / 1.5, height: 50 / 1.5, id: 2, image: 'images/items/pokeball_yellow.png' },
   { width: 50 / 1.5, height: 50 / 1.5, id: 3, image: 'images/items/pokeball_purple.png' },
   { width: 50 / 1.5, height: 50 / 1.5, id: 4, image: 'images/items/pokeball_cyan.png' },
+  { width: 50 / 1.5, height: 50 / 1.5, id: 5, image: 'images/items/pokeball_pink.png' },
+  { width: 50 / 1.5, height: 50 / 1.5, id: 6, image: 'images/items/pokeball_orange.png' },
 ];
 
 // 게임 요소들
@@ -107,9 +109,9 @@ function createSprites() {
     };
   });
 
-  itemController = new ItemController(ctx, itemImages, scaleRatio, GROUND_SPEED);
+  itemController = new ItemController(ctx, itemImages, scaleRatio, GROUND_SPEED, itemUnlockData);
 
-  score = new Score(ctx, scaleRatio, stageData);
+  score = new Score(ctx, scaleRatio, stageData, itemData);
 }
 
 function getScaleRatio() {
@@ -167,6 +169,7 @@ function reset() {
 
   ground.reset();
   cactiController.reset();
+  itemController.reset();
   score.reset();
   gameSpeed = GAME_SPEED_START;
   sendEvent(2, { timestamp: Date.now() });
@@ -207,7 +210,7 @@ function gameLoop(currentTime) {
     ground.update(gameSpeed, deltaTime);
     // 선인장
     cactiController.update(gameSpeed, deltaTime);
-    itemController.update(gameSpeed, deltaTime);
+    itemController.update(gameSpeed, deltaTime, score.getCurrentStageId());
     // 달리기
     player.update(gameSpeed, deltaTime);
     updateGameSpeed(deltaTime);

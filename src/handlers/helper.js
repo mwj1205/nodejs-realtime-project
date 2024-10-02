@@ -19,7 +19,7 @@ export const handleConnection = (socket, uuid) => {
 };
 
 export const handlerEvent = (io, socket, data) => {
-  console.log(data);
+  console.log('data: ', data);
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
     socket.emit('response', { status: 'fail', message: 'Client version mismatch' });
     return;
