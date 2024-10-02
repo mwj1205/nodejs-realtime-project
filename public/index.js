@@ -225,6 +225,7 @@ function gameLoop(currentTime) {
 
     sendEvent(3, { timestamp: Date.now(), score: Math.floor(score.score) });
   }
+
   const collideWithItem = itemController.collideWith(player);
   if (collideWithItem && collideWithItem.itemId) {
     score.getItem(collideWithItem.itemId);

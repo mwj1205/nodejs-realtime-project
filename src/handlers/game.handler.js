@@ -1,4 +1,5 @@
 import { getGameAssets } from '../init/assets.js';
+import { clearCollectedItems } from '../models/item.model.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
 
 export const gameStart = (uuid, payload) => {
@@ -7,6 +8,7 @@ export const gameStart = (uuid, payload) => {
   // todo: timestamp 검증
 
   clearStage(uuid);
+  clearCollectedItems(uuid);
   setStage(uuid, stages.data[0].id, payload.timestamp);
   console.log('stage: ', getStage(uuid));
 

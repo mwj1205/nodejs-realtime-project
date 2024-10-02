@@ -50,6 +50,8 @@ class Score {
     if (this.itemScores[itemId]) {
       this.score += this.itemScores[itemId];
       console.log(`itemId: ${itemId}, Score: ${this.itemScores[itemId]}`);
+
+      sendEvent(12, { itemId: itemId });
     } else {
       console.warn(`Unknown item ID: ${itemId}`);
     }
