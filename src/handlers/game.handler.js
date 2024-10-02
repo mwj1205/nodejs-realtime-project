@@ -6,7 +6,7 @@ export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
   const serverTime = Date.now();
   // 타임스탬프 검증
-  if (payload.timestamp > serverTime) {
+  if (payload.timestamp > serverTime || payload.timestamp < serverTime - 5000) {
     return { status: 'fail', message: 'Invalid game end time' };
   }
 
@@ -23,14 +23,9 @@ export const gameEnd = (uuid, payload) => {
   // 클라이언트는 게임 종료 시 타임스탬프와 총 점수 줄거임
   const { timestamp: gameEndTime, score } = payload;
   const userstages = getStage(uuid);
-  const serverTime = Date.now(); // 현재 타임스탬프
 
   if (!userstages.length) {
     return { status: 'fail', message: 'No stages found for user' };
-  }
-
-  if (gameEndTime > serverTime) {
-    return { status: 'fail', message: 'Invalid game end time' };
   }
 
   // 각 스테이지의 지속시간을 계산하여 총 점수 계산
