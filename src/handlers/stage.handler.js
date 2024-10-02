@@ -2,7 +2,8 @@
 // 유저는 일정 점수가 되면 다음 스테이지로 이동한다.
 
 import { getGameAssets } from '../init/assets.js';
-import { getStage, setStage } from '../models/stage.model.js';
+import { getTotalItemScore } from '../models/item.model.js';
+import { getStage, getTotalStageScore, setStage } from '../models/stage.model.js';
 
 export const moveStageHandler = (uuid, payload) => {
   // 유저의 현재 스테이지 정보
@@ -25,15 +26,25 @@ export const moveStageHandler = (uuid, payload) => {
   const { stages } = getGameAssets();
   const currentStageData = stages.data.find((stage) => stage.id === currentStage.id);
   const targetStageData = stages.data.find((stage) => stage.id === payload.targetStage);
+  if (!currentStageData) {
+    return { status: 'fail', message: 'Current stage not found' };
+  }
+
   if (!targetStageData) {
     return { status: 'fail', message: 'Target stage not found' };
   }
 
   // 점수 검증
   const serverTime = Date.now(); // 현재 타임스탬프
-  const elapsedTime = (serverTime - currentStage.timestamp) / 1000;
 
-  // todo: stage를 넘어가기 위한 점수가 되었나? 검증
+  // 각 스테이지의 지속시간을 계산하여 총 점수 계산
+  let totalScore = 0;
+
+  // 스테이지 지속 시간으로 획득한 총 점수
+  totalScore += getTotalStageScore(uuid, serverTime);
+
+  // 획득한 아이템의 점수를 계산하여 점수에 추가
+  totalScore += getTotalItemScore(uuid);
 
   setStage(uuid, payload.targetStage, serverTime);
   return { status: 'success' };
