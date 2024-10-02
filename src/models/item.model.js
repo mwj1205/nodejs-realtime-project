@@ -24,6 +24,16 @@ export const getCollectedItems = (uuid) => {
   return collectedItems[uuid] || [];
 };
 
+export const getTotalItemScore = (uuid) => {
+  let totalScore = 0;
+  const collectedItems = getCollectedItems(uuid);
+
+  collectedItems.forEach((itemId, _) => {
+    totalScore += getItemScore(itemId);
+  });
+  return totalScore;
+};
+
 // 게임 종료 시 사용자의 수집된 아이템 목록을 초기화하는 함수
 export const clearCollectedItems = (uuid) => {
   collectedItems[uuid] = [];

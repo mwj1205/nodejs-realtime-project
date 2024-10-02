@@ -1,5 +1,5 @@
 import { getGameAssets } from '../init/assets.js';
-import { addCollectedItem, getCollectedItems, getItemScore } from '../models/item.model.js';
+import { addCollectedItem } from '../models/item.model.js';
 import { getStage } from '../models/stage.model.js';
 
 export const getItemHandler = (uuid, payload) => {
@@ -18,7 +18,6 @@ export const getItemHandler = (uuid, payload) => {
     return { status: 'fail', message: 'No stages found for user' };
   }
 
-  currentStages.sort((a, b) => a.id - b.id);
   const currentStage = currentStages[currentStages.length - 1];
 
   // 현재 스테이지에서 유저가 획득한 아이템이 언락 됐는지 확인
