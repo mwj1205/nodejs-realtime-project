@@ -1,5 +1,5 @@
 import { getGameAssets } from '../init/assets.js';
-import { clearCollectedItems } from '../models/item.model.js';
+import { clearCollectedItems, getCollectedItems, getItemScore } from '../models/item.model.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
 
 export const gameStart = (uuid, payload) => {
@@ -39,6 +39,13 @@ export const gameEnd = (uuid, payload) => {
 
     const stageDuration = (stageEndTime - stage.timestamp) / 100;
     totalScore += stageDuration * currentStageData.scorePerSecond; // 1초당 1점
+  });
+
+  // 획득한 아이템의 점수를 계산하여 점수에 추가
+  const collectedItems = getCollectedItems(uuid);
+
+  collectedItems.forEach((itemId, _) => {
+    totalScore += getItemScore(itemId);
   });
 
   // 점수와 타임스탬프 검증

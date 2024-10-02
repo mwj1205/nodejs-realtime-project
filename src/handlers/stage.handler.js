@@ -25,6 +25,10 @@ export const moveStageHandler = (uuid, payload) => {
   const { stages } = getGameAssets();
   const currentStageData = stages.data.find((stage) => stage.id === currentStage.id);
   const targetStageData = stages.data.find((stage) => stage.id === payload.targetStage);
+  if (!currentStageData) {
+    return { status: 'fail', message: 'Current stage not found' };
+  }
+
   if (!targetStageData) {
     return { status: 'fail', message: 'Target stage not found' };
   }
