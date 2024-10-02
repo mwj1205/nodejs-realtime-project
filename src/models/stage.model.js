@@ -13,7 +13,7 @@ export const getStage = (uuid) => {
 };
 
 export const setStage = (uuid, id, timestamp) => {
-  return stages[uuid].push({ id, timestamp });
+  stages[uuid].push({ id, timestamp });
 };
 
 export const clearStage = (uuid) => {
@@ -28,7 +28,13 @@ export const getTotalStageScore = (uuid, time) => {
   // 스테이지 별 점수 계산
   currentStages.forEach((stage, index) => {
     let stageEndTime;
-    let currentStageData = stages.data[index];
+    let currentStageData = stages.data.find((s) => s.id === stage.id);
+
+    if (!currentStageData) {
+      console.log(`Stage data not found id: ${stage.id}`);
+      return;
+    }
+
     if (index === currentStages.length - 1) {
       stageEndTime = time;
     } else {
