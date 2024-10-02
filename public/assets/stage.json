@@ -2,12 +2,12 @@
   "name": "stage",
   "version": "1.0.0",
   "data": [
-    { "id": 1000, "score": 0, "scorePerSecond": 1 },
-    { "id": 1001, "score": 100, "scorePerSecond": 2 },
-    { "id": 1002, "score": 300, "scorePerSecond": 3 },
-    { "id": 1003, "score": 600, "scorePerSecond": 5 },
-    { "id": 1004, "score": 1100, "scorePerSecond": 7 },
-    { "id": 1005, "score": 1800, "scorePerSecond": 11 },
-    { "id": 1006, "score": 3000, "scorePerSecond": 13 }
+    { "id": 1000, "score": 0, "scorePerSecond": 1, "next_stage_id": 1001 },
+    { "id": 1001, "score": 100, "scorePerSecond": 2, "next_stage_id": 1002 },
+    { "id": 1002, "score": 300, "scorePerSecond": 3, "next_stage_id": 1003 },
+    { "id": 1003, "score": 600, "scorePerSecond": 5, "next_stage_id": 1004 },
+    { "id": 1004, "score": 1100, "scorePerSecond": 7, "next_stage_id": 1005 },
+    { "id": 1005, "score": 1800, "scorePerSecond": 11, "next_stage_id": 1006 },
+    { "id": 1006, "score": 3000, "scorePerSecond": 13, "next_stage_id": null }
   ]
 }

@@ -3,7 +3,6 @@ import { sendEvent } from './socket.js';
 class Score {
   score = 0;
   HIGH_SCORE_KEY = 'highScore';
-  currentStageIndex = 0; // 현재 스테이지 인덱스
   stages = []; // 모든 스테이지의 데이터
   currentStage = null; // 현재 스테이지의 데이터
   nextStage = null; // 다음 스테이지의 데이터
@@ -15,21 +14,20 @@ class Score {
     this.scaleRatio = scaleRatio;
     this.stages = stageData.data;
     this.items = itemData.data;
-    this.updateStage();
+    this.currentStage = this.stages[0];
+    this.updateNextStage();
 
     itemData.data.forEach((item) => {
       this.itemScores[item.id] = item.score;
     });
   }
 
-  updateStage() {
-    this.currentStage = this.stages[this.currentStageIndex];
-    // nextStage는 currentStage가 마지막 스테이지면 null
-    // 아니면 currentStageIndex + 1
-    this.nextStage =
-      this.currentStageIndex < this.stages.length - 1
-        ? this.stages[this.currentStageIndex + 1]
-        : null;
+  updateNextStage() {
+    if (this.currentStage.next_stage_id) {
+      this.nextStage = this.stages.find((stage) => stage.id === this.currentStage.next_stage_id);
+    } else {
+      this.nextStage = null;
+    }
   }
 
   update(deltaTime) {
@@ -38,11 +36,11 @@ class Score {
     if (this.nextStage && this.score >= this.nextStage.score) {
       sendEvent(11, {
         currentStage: this.currentStage.id,
-        targetStage: this.nextStage ? this.nextStage.id : this.currentStage.id,
+        targetStage: this.nextStage.id,
         score: this.score,
       });
-      this.currentStageIndex++;
-      this.updateStage();
+      this.currentStage = this.nextStage;
+      this.updateNextStage();
     }
   }
 
@@ -59,8 +57,8 @@ class Score {
 
   reset() {
     this.score = 0;
-    this.currentStageIndex = 0;
-    this.updateStage();
+    this.currentStage = this.stages[0];
+    this.updateNextStage();
   }
 
   setHighScore() {

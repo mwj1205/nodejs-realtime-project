@@ -34,15 +34,14 @@ export const moveStageHandler = (uuid, payload) => {
     return { status: 'fail', message: 'Target stage not found' };
   }
 
+  // todo: currentStage의 다음 스테이지가 payload의 targetStage가 맞는지 검승
+
   // 점수 검증
   const serverTime = Date.now(); // 현재 타임스탬프
-
   // 각 스테이지의 지속시간을 계산하여 총 점수 계산
   let totalScore = 0;
-
   // 스테이지 지속 시간으로 획득한 총 점수
   totalScore += getTotalStageScore(uuid, serverTime);
-
   // 획득한 아이템의 점수를 계산하여 점수에 추가
   totalScore += getTotalItemScore(uuid);
 
