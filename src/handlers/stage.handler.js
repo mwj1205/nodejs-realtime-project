@@ -3,48 +3,63 @@
 
 import { getGameAssets } from '../init/assets.js';
 import { getTotalItemScore } from '../models/item.model.js';
-import { getStage, getTotalStageScore, setStage } from '../models/stage.model.js';
+import {
+  getCurrentStageId,
+  getStage,
+  getTotalStageScore,
+  setStage,
+} from '../models/stage.model.js';
 
 export const moveStageHandler = (uuid, payload) => {
   // 유저의 현재 스테이지 정보
   let currentStages = getStage(uuid);
-  if (!currentStages.length) {
-    return { status: 'fail', message: 'No stages found for user' };
+  if (Object.keys(currentStages).length === 0) {
+    return { status: 'fail', message: 'No stages found for user12' };
   }
 
-  // 오름차순 -> 가장 큰 스테이지 ID를 확인 <- 유저의 현재 스테이지
-  currentStages.sort((a, b) => a.id - b.id);
-  const currentStage = currentStages[currentStages.length - 1];
-  //console.log('currentStage: ', currentStage);
-
-  // 클라이언트 vs 서버 비교
-  if (payload.currentStage !== currentStage.id) {
-    return { status: 'fail', message: 'Current Stage mismatch' };
-  }
-
-  // targetStage 대한 검증 <- 게임 에셋에 존재하는가?
+  // 게임 에셋에서 스테이지 데이터 가져오기
   const { stages } = getGameAssets();
-  const currentStageData = stages.data.find((stage) => stage.id === currentStage.id);
-  const targetStageData = stages.data.find((stage) => stage.id === payload.targetStage);
-  if (!currentStageData) {
+  const stageDataMap = stages.data.reduce((acc, stage) => {
+    acc[stage.id] = stage;
+    return acc;
+  }, {});
+
+  // timestamp가 가장 큰 값의 stageId를 찾음
+  const currentStageId = getCurrentStageId(uuid);
+  if (!currentStageId) {
     return { status: 'fail', message: 'Current stage not found' };
   }
 
-  if (!targetStageData) {
-    return { status: 'fail', message: 'Target stage not found' };
+  // 클라이언트 vs 서버 비교
+  if (payload.currentStage !== currentStageId) {
+    return { status: 'fail', message: 'Current Stage mismatch' };
   }
 
-  // todo: currentStage의 다음 스테이지가 payload의 targetStage가 맞는지 검승
+  const currentStageData = stageDataMap[currentStageId];
+  const targetStageData = stageDataMap[payload.targetStage];
+
+  if (!currentStageData || !targetStageData) {
+    return { status: 'fail', message: 'Stage data not found' };
+  }
+
+  // 현재 스테이지의 다음 스테이지가 payload의 targetStage가 맞는지 검증
+  if (currentStageData.next_stage_id !== targetStageData.id) {
+    return { status: 'fail', message: 'Invalid target stage' };
+  }
 
   // 점수 검증
   const serverTime = Date.now(); // 현재 타임스탬프
-  // 각 스테이지의 지속시간을 계산하여 총 점수 계산
   let totalScore = 0;
   // 스테이지 지속 시간으로 획득한 총 점수
   totalScore += getTotalStageScore(uuid, serverTime);
   // 획득한 아이템의 점수를 계산하여 점수에 추가
   totalScore += getTotalItemScore(uuid);
 
+  console.log('totalScore: ', totalScore);
+  if (totalScore < targetStageData.score - 3) {
+    return { status: 'fail', message: 'Insufficient score' };
+  }
+
   setStage(uuid, payload.targetStage, serverTime);
-  return { status: 'success' };
+  return { status: 'success', message: 'next stage' };
 };

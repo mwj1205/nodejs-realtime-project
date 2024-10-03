@@ -7,24 +7,23 @@ export const gameStart = (uuid, payload) => {
   const serverTime = Date.now();
   // 타임스탬프 검증
   if (payload.timestamp > serverTime || payload.timestamp < serverTime - 5000) {
-    return { status: 'fail', message: 'Invalid game end time' };
+    return { status: 'fail', message: 'Invalid game start time' };
   }
 
   clearStage(uuid);
   clearCollectedItems(uuid);
-  // stage 배열에서 0번째 = 첫번째 스테이지
+  // stages 배열에서 첫 번째 스테이지의 id를 사용
   setStage(uuid, stages.data[0].id, payload.timestamp);
   console.log('stage: ', getStage(uuid));
 
-  return { status: 'success' };
+  return { status: 'success', message: 'game start' };
 };
 
 export const gameEnd = (uuid, payload) => {
   // 클라이언트는 게임 종료 시 타임스탬프와 총 점수 줄거임
   const { timestamp: gameEndTime, score } = payload;
   const userstages = getStage(uuid);
-
-  if (!userstages.length) {
+  if (!Object.keys(userstages).length === 0) {
     return { status: 'fail', message: 'No stages found for user' };
   }
 
@@ -42,7 +41,6 @@ export const gameEnd = (uuid, payload) => {
   console.log('score: ', score);
   console.log('totalScore: ', totalScore);
   if (Math.abs(score - totalScore) > 5) {
-    console.log('Math.abs(score - totalScore): ', Math.abs(score - totalScore));
     return { status: 'fail', message: 'Score verification failed' };
   }
 
