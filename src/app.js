@@ -13,11 +13,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 initSocket(server);
 
-app.get('/', (req, res) => {
-  // 테스트를 위한 API 생성
-  res.send('<h1>Hello World</h1>');
-});
-
 server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
 

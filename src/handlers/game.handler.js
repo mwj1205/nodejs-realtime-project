@@ -1,6 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { clearCollectedItems, getTotalItemScore } from '../models/item.model.js';
 import { clearStage, getStage, getTotalStageScore, setStage } from '../models/stage.model.js';
+import { saveUserScore } from '../utils/redis.utils.js';
 
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
@@ -19,33 +20,25 @@ export const gameStart = (uuid, payload) => {
   return { status: 'success', message: 'game start' };
 };
 
-export const gameEnd = (uuid, payload) => {
-  // 클라이언트는 게임 종료 시 타임스탬프와 총 점수 줄거임
+export const gameEnd = async (uuid, payload) => {
   const { timestamp: gameEndTime, score } = payload;
   const userstages = getStage(uuid);
   if (!Object.keys(userstages).length === 0) {
     return { status: 'fail', message: 'No stages found for user' };
   }
 
-  // 각 스테이지의 지속시간을 계산하여 총 점수 계산
   let totalScore = 0;
-
   // 스테이지 지속 시간으로 획득한 총 점수
   totalScore += getTotalStageScore(uuid, gameEndTime);
-
   // 획득한 아이템의 점수를 계산하여 점수에 추가
   totalScore += getTotalItemScore(uuid);
 
-  // 점수와 타임스탬프 검증
-  // 오차범위 5
-  console.log('score: ', score);
-  console.log('totalScore: ', totalScore);
+  // 오차 범위 5
   if (Math.abs(score - totalScore) > 5) {
     return { status: 'fail', message: 'Score verification failed' };
   }
 
-  // todo: DB에 게임 결과 저장
-  // setRusult(userId, score, timestamp);
-
+  // Redis에 점수 저장
+  await saveUserScore(uuid, score);
   return { status: 'success', message: 'Game ended', score };
 };

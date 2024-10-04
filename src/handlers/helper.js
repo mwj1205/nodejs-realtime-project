@@ -2,6 +2,7 @@ import { CLIENT_VERSION } from '../constants.js';
 import { createCollectedItem } from '../models/item.model.js';
 import { createStage } from '../models/stage.model.js';
 import { getUser, removeUser } from '../models/user.model.js';
+import { loginUser } from '../utils/redis.utils.js';
 import handlerMappings from './handlerMapping.js';
 
 export const handleDisconnect = (socket, uuid) => {
@@ -10,8 +11,10 @@ export const handleDisconnect = (socket, uuid) => {
   console.log('Current users: ', getUser());
 };
 
-export const handleConnection = (socket, uuid) => {
+export const handleConnection = async (socket, uuid) => {
   console.log(`New User Connected!: ${uuid} with socket Id ${socket.id}`);
+  const loginSuccess = await loginUser(uuid);
+  console.log('loginSuccess: ', loginSuccess);
   console.log('Current users: ', getUser());
 
   createStage(uuid);
@@ -20,7 +23,7 @@ export const handleConnection = (socket, uuid) => {
   socket.emit('connection', { uuid });
 };
 
-export const handlerEvent = (io, socket, data) => {
+export const handlerEvent = async (io, socket, data) => {
   console.log('data: ', data);
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
     socket.emit('response', { status: 'fail', message: 'Client version mismatch' });
@@ -29,16 +32,21 @@ export const handlerEvent = (io, socket, data) => {
 
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
-    socket.emit('response', { status: 'fail', message: 'Hander not found' });
+    socket.emit('response', { status: 'fail', message: 'Handler not found' });
     return;
   }
 
-  const response = handler(data.userId, data.payload);
+  try {
+    const response = await handler(data.userId, data.payload);
 
-  if (response.broadcast) {
-    io.emit('response', 'broadcast');
-    return;
+    if (response.broadcast) {
+      io.emit('response', 'broadcast');
+      return;
+    }
+
+    socket.emit('response', response);
+  } catch (error) {
+    console.error('Error in handler:', error);
+    socket.emit('response', { status: 'error', message: 'Internal server error' });
   }
-
-  socket.emit('response', response);
 };

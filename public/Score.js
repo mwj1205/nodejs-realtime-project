@@ -1,4 +1,4 @@
-import { sendEvent } from './socket.js';
+import { sendEvent } from './Socket.js';
 
 class Score {
   score = 0;
