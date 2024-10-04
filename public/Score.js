@@ -3,18 +3,20 @@ import { sendEvent } from './socket.js';
 class Score {
   score = 0;
   HIGH_SCORE_KEY = 'highScore';
-  stages = []; // 모든 스테이지의 데이터
   currentStage = null; // 현재 스테이지의 데이터
   nextStage = null; // 다음 스테이지의 데이터
+  stages = {}; // 모든 스테이지의 데이터
   itemScores = {};
 
   constructor(ctx, scaleRatio, stageData, itemData) {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
-    this.stages = stageData.data;
-    this.items = itemData.data;
-    this.currentStage = this.stages[0];
+    this.stages = stageData.data.reduce((acc, stage) => {
+      acc[stage.id] = stage;
+      return acc;
+    }, {});
+    this.currentStage = this.stages[1000]; // 첫 번째 스테이지는 1000
     this.updateNextStage();
 
     itemData.data.forEach((item) => {
@@ -23,11 +25,9 @@ class Score {
   }
 
   updateNextStage() {
-    if (this.currentStage.next_stage_id) {
-      this.nextStage = this.stages.find((stage) => stage.id === this.currentStage.next_stage_id);
-    } else {
-      this.nextStage = null;
-    }
+    this.nextStage = this.currentStage.next_stage_id
+      ? this.stages[this.currentStage.next_stage_id]
+      : null;
   }
 
   update(deltaTime) {
@@ -57,7 +57,7 @@ class Score {
 
   reset() {
     this.score = 0;
-    this.currentStage = this.stages[0];
+    this.currentStage = this.stages[1000];
     this.updateNextStage();
   }
 
