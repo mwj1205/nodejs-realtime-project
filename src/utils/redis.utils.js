@@ -22,7 +22,9 @@ export const saveUserScore = async (userId, score) => {
     const highScore = await redisClient.hGet(`user:${userId}`, 'highscore');
     if (!highScore || parseInt(score) > parseInt(highScore)) {
       await redisClient.hSet(`user:${userId}`, 'highscore', score.toString());
+      return true;
     }
+    return false;
   } catch (error) {
     console.error('Error saving user score:', error);
   }
@@ -35,6 +37,16 @@ export const getUserHighScore = async (userId) => {
   } catch (error) {
     console.error('Error getting user high score:', error);
     return null;
+  }
+};
+
+export const updateServerHighScore = async (score) => {
+  const serverHighScore = await redisClient.get('serverhighscore');
+  if (Number(serverHighScore) < score) {
+    await redisClient.set('serverhighscore', score.toString());
+    return true;
+  } else {
+    return false;
   }
 };
 

@@ -40,10 +40,15 @@ export const handlerEvent = async (io, socket, data) => {
     const response = await handler(data.userId, data.payload);
 
     if (response.broadcast) {
-      io.emit('response', 'broadcast');
-      return;
+      if (response.serverHighScore) {
+        io.emit('broadcast', {
+          message: 'new server high score',
+          serverhighscore: response.serverHighScore,
+        });
+      }
     }
 
+    console.log('response: ', response);
     socket.emit('response', response);
   } catch (error) {
     console.error('Error in handler:', error);

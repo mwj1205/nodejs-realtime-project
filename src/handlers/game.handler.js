@@ -1,7 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { clearCollectedItems, getTotalItemScore } from '../models/item.model.js';
 import { clearStage, getStage, getTotalStageScore, setStage } from '../models/stage.model.js';
-import { getUserHighScore, saveUserScore } from '../utils/redis.utils.js';
+import { getUserHighScore, saveUserScore, updateServerHighScore } from '../utils/redis.utils.js';
 
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
@@ -38,8 +38,15 @@ export const gameEnd = async (uuid, payload) => {
     return { status: 'fail', message: 'Score verification failed' };
   }
 
+  const response = { status: 'success', message: 'Game ended', score };
   // Redis에 점수 저장
-  await saveUserScore(uuid, score);
-  const highScore = await getUserHighScore(uuid);
-  return { status: 'success', message: 'Game ended', score, highScore: highScore };
+  if (await saveUserScore(uuid, score)) {
+    response.highScore = score;
+  }
+  // 서버 하이스코어 업데이트 성공 시 response에 추가
+  if (await updateServerHighScore(score)) {
+    response.broadcast = true; // 브로드캐스트 정보 추가
+    response.serverHighScore = score; // 서버 하이스코어 추가
+  }
+  return response;
 };

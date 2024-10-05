@@ -4,6 +4,7 @@ const storageUserId = localStorage.getItem('userId');
 let socket = null;
 let userId = storageUserId;
 let highScore = 0;
+let serverHighScore = 0;
 
 socket = io('http://localhost:3000', {
   query: {
@@ -16,6 +17,13 @@ socket.on('response', (data) => {
   console.log(data);
   if (data.highScore) {
     highScore = data.highScore;
+  }
+});
+
+socket.on('broadcast', (data) => {
+  console.log(data);
+  if (data.serverhighscore) {
+    serverHighScore = data.serverhighscore;
   }
 });
 
@@ -35,11 +43,9 @@ const sendEvent = (handlerId, payload) => {
     handlerId,
     payload,
   });
-  console.log('userId: ', userId);
 };
 
 const getHighScore = () => {
-  console.log('highScore: ', highScore);
   return highScore;
 };
 
