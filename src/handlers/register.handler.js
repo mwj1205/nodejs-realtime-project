@@ -4,8 +4,17 @@ import { handleConnection, handleDisconnect, handlerEvent } from './helper.js';
 
 const registerHandler = (io) => {
   // io.on은 서버의 모든 이벤트를 수신
-  io.on('connection', (socket) => {
-    const userUUID = uuidv4();
+  io.on('connection', async (socket) => {
+    let { userUUID } = socket.handshake.query;
+
+    console.log('userUUID: ', userUUID);
+    if (userUUID === 'null') {
+      userUUID = null;
+    }
+
+    if (!userUUID) {
+      userUUID = uuidv4();
+    }
     addUser({ uuid: userUUID, socketId: socket.id });
     handleConnection(socket, userUUID);
 

@@ -3,8 +3,8 @@ import Ground from './Ground.js';
 import CactiController from './CactiController.js';
 import Score from './Score.js';
 import ItemController from './ItemController.js';
-import './socket.js';
-import { sendEvent } from './socket.js';
+import './Socket.js';
+import { sendEvent } from './Socket.js';
 
 import itemData from './assets/item.json' with { type: 'json' };
 import stageData from './assets/stage.json' with { type: 'json' };
