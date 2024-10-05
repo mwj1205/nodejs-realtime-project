@@ -20,6 +20,7 @@
 ```
 
 - 파일 구조
+
 ```
 📦public // 프론트엔드
 ┣ 📂.idea
@@ -62,6 +63,7 @@
 ┣ 📜app.js
 ┗ 📜constants.js
 ```
+
 ## 3️⃣ 필수 기능
 
 1. 스테이지 구분
@@ -107,12 +109,14 @@
 2. 가장 높은 점수 Record 관리
    서버에서 가장 높은 점수를 관리하고 갱신 시 알림을 보냅니다.
 3. 유저 정보 연결
-   유저 ID를 기반으로 게임 기록을 연동합니다.
-4. Redis 연동, 게임 정보 저장
-   Redis를 사용하여 유저 및 스테이지 정보를 저장합니다.
+   최초 접속 시 발급 받은 UUID를 기반으로 게임 기록을 연동합니다.
+4. Redis 연동, 게임 로그 저장
+   Redis를 사용하여 유저 정보 및 게임 로그를 기록합니다.
 
 ## 🛠️ 기술 스택
 
+<img src="https://shields.io/badge/JavaScript-F7DF1E?logo=JavaScript&logoColor=000&style=flat-square" style="height : 25px; margin-left : 10px; margin-right : 10px;"/>&nbsp;
+<img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=Node.js&logoColor=white" style="height : 25px; margin-left : 10px; margin-right : 10px;"/>&nbsp;
+
 Node.js: 서버 사이드 로직
 WebSocket: 실시간 데이터 통신
-JSON: 데이터 구조화 및 전송
