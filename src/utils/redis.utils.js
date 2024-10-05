@@ -41,12 +41,26 @@ export const getUserHighScore = async (userId) => {
 };
 
 export const updateServerHighScore = async (score) => {
-  const serverHighScore = await redisClient.get('serverhighscore');
-  if (Number(serverHighScore) < score) {
-    await redisClient.set('serverhighscore', score.toString());
-    return true;
-  } else {
-    return false;
+  try {
+    const serverHighScore = await redisClient.get('serverhighscore');
+    if (Number(serverHighScore) < score) {
+      await redisClient.set('serverhighscore', score.toString());
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error updating server high score: '.error);
+    return null;
+  }
+};
+
+export const getServerHighScore = async () => {
+  try {
+    return await redisClient.get('serverhighscore');
+  } catch (error) {
+    console.error('Error getting server high score: ', error);
+    return null;
   }
 };
 

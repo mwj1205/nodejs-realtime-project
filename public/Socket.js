@@ -34,6 +34,9 @@ socket.on('connection', (data) => {
   if (data.highScore) {
     highScore = data.highScore;
   }
+  if (data.serverHighScore) {
+    serverHighScore = data.serverhighscore;
+  }
 });
 
 const sendEvent = (handlerId, payload) => {
@@ -49,4 +52,7 @@ const getHighScore = () => {
   return highScore;
 };
 
-export { sendEvent, getHighScore };
+const getServerHighScore = () => {
+  return serverHighScore;
+};
+export { sendEvent, getHighScore, getServerHighScore };
