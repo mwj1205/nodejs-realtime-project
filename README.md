@@ -117,6 +117,7 @@
 
 <img src="https://shields.io/badge/JavaScript-F7DF1E?logo=JavaScript&logoColor=000&style=flat-square" style="height : 25px; margin-left : 10px; margin-right : 10px;"/>&nbsp;
 <img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=Node.js&logoColor=white" style="height : 25px; margin-left : 10px; margin-right : 10px;"/>&nbsp;
+<img src="https://img.shields.io/badge/Web%20Socket-010101?style=flat-square&logo=socketdotio&logoColor=white" style="height : 25px; margin-left : 10px; margin-right : 10px;"/>&nbsp;
 
 Node.js: 서버 사이드 로직
 WebSocket: 실시간 데이터 통신
