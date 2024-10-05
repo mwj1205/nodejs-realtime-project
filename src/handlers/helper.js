@@ -44,7 +44,7 @@ export const handlerEvent = async (io, socket, data) => {
       if (response.serverHighScore) {
         io.emit('broadcast', {
           message: 'new server high score',
-          serverhighscore: response.serverHighScore,
+          serverHighScore: response.serverHighScore,
         });
       }
     }

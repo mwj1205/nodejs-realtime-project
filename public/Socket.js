@@ -22,8 +22,8 @@ socket.on('response', (data) => {
 
 socket.on('broadcast', (data) => {
   console.log(data);
-  if (data.serverhighscore) {
-    serverHighScore = data.serverhighscore;
+  if (data.serverHighScore) {
+    serverHighScore = data.serverHighScore;
   }
 });
 
@@ -35,7 +35,7 @@ socket.on('connection', (data) => {
     highScore = data.highScore;
   }
   if (data.serverHighScore) {
-    serverHighScore = data.serverhighscore;
+    serverHighScore = data.serverHighScore;
   }
 });
 
@@ -55,4 +55,5 @@ const getHighScore = () => {
 const getServerHighScore = () => {
   return serverHighScore;
 };
+
 export { sendEvent, getHighScore, getServerHighScore };
