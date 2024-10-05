@@ -1,9 +1,9 @@
-import { sendEvent, getHighScore } from './Socket.js';
+import { sendEvent, getHighScore, getServerHighScore } from './Socket.js';
 
 class Score {
   score = 0;
   highScore = 0;
-  HIGH_SCORE_KEY = 'highScore';
+  serverHighScore = 0;
   currentStage = null; // 현재 스테이지의 데이터
   nextStage = null; // 다음 스테이지의 데이터
   stages = {}; // 모든 스테이지의 데이터
@@ -17,7 +17,7 @@ class Score {
       acc[stage.id] = stage;
       return acc;
     }, {});
-    this.currentStage = this.stages[1000]; // 첫 번째 스테이지는 1000
+    this.currentStage = this.stages[1000];
     this.updateNextStage();
 
     itemData.data.forEach((item) => {
@@ -58,6 +58,7 @@ class Score {
 
   reset() {
     this.highScore = getHighScore();
+    this.serverHighScore = getServerHighScore();
     this.score = 0;
     this.currentStage = this.stages[1000];
     this.updateNextStage();
@@ -67,6 +68,10 @@ class Score {
     if (this.score > this.highScore) {
       this.highScore = getHighScore();
     }
+  }
+
+  updateServerHighScore() {
+    this.serverHighScore = getServerHighScore();
   }
 
   getScore() {
@@ -86,12 +91,15 @@ class Score {
 
     const scoreX = this.canvas.width - 75 * this.scaleRatio;
     const highScoreX = scoreX - 125 * this.scaleRatio;
+    const serverHighScoreX = 10 * this.scaleRatio;
 
     const scorePadded = Math.floor(this.score).toString().padStart(6, 0);
     const highScorePadded = this.highScore.toString().padStart(6, 0);
+    const serverHighScorePadded = this.serverHighScore.toString().padStart(6, 0);
 
     this.ctx.fillText(scorePadded, scoreX, y);
     this.ctx.fillText(`HI ${highScorePadded}`, highScoreX, y);
+    this.ctx.fillText(`🏆 Server High Score: ${serverHighScorePadded}`, serverHighScoreX, y);
   }
 }
 

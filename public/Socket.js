@@ -4,6 +4,7 @@ const storageUserId = localStorage.getItem('userId');
 let socket = null;
 let userId = storageUserId;
 let highScore = 0;
+let serverHighScore = 0;
 
 socket = io('http://localhost:3000', {
   query: {
@@ -19,12 +20,22 @@ socket.on('response', (data) => {
   }
 });
 
+socket.on('broadcast', (data) => {
+  console.log(data);
+  if (data.serverHighScore) {
+    serverHighScore = data.serverHighScore;
+  }
+});
+
 socket.on('connection', (data) => {
   console.log('connection: ', data);
   userId = data.uuid;
   localStorage.setItem('userId', userId);
   if (data.highScore) {
     highScore = data.highScore;
+  }
+  if (data.serverHighScore) {
+    serverHighScore = data.serverHighScore;
   }
 });
 
@@ -35,12 +46,14 @@ const sendEvent = (handlerId, payload) => {
     handlerId,
     payload,
   });
-  console.log('userId: ', userId);
 };
 
 const getHighScore = () => {
-  console.log('highScore: ', highScore);
   return highScore;
 };
 
-export { sendEvent, getHighScore };
+const getServerHighScore = () => {
+  return serverHighScore;
+};
+
+export { sendEvent, getHighScore, getServerHighScore };
