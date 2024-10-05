@@ -2,7 +2,7 @@ import { CLIENT_VERSION } from '../constants.js';
 import { createCollectedItem } from '../models/item.model.js';
 import { createStage } from '../models/stage.model.js';
 import { getUser, removeUser } from '../models/user.model.js';
-import { loginUser } from '../utils/redis.utils.js';
+import { getUserHighScore, loginUser } from '../utils/redis.utils.js';
 import handlerMappings from './handlerMapping.js';
 
 export const handleDisconnect = (socket, uuid) => {
@@ -14,13 +14,13 @@ export const handleDisconnect = (socket, uuid) => {
 export const handleConnection = async (socket, uuid) => {
   console.log(`New User Connected!: ${uuid} with socket Id ${socket.id}`);
   const loginSuccess = await loginUser(uuid);
-  console.log('loginSuccess: ', loginSuccess);
   console.log('Current users: ', getUser());
 
   createStage(uuid);
   createCollectedItem(uuid);
 
-  socket.emit('connection', { uuid });
+  const highScore = await getUserHighScore(uuid);
+  socket.emit('connection', { uuid, highScore });
 };
 
 export const handlerEvent = async (io, socket, data) => {
