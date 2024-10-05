@@ -1,7 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { clearCollectedItems, getTotalItemScore } from '../models/item.model.js';
 import { clearStage, getStage, getTotalStageScore, setStage } from '../models/stage.model.js';
-import { saveUserScore } from '../utils/redis.utils.js';
+import { getUserHighScore, saveUserScore } from '../utils/redis.utils.js';
 
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
@@ -40,5 +40,6 @@ export const gameEnd = async (uuid, payload) => {
 
   // Redis에 점수 저장
   await saveUserScore(uuid, score);
-  return { status: 'success', message: 'Game ended', score };
+  const highScore = await getUserHighScore(uuid);
+  return { status: 'success', message: 'Game ended', score, highScore: highScore };
 };

@@ -1,7 +1,8 @@
-import { sendEvent } from './Socket.js';
+import { sendEvent, getHighScore } from './Socket.js';
 
 class Score {
   score = 0;
+  highScore = 0;
   HIGH_SCORE_KEY = 'highScore';
   currentStage = null; // 현재 스테이지의 데이터
   nextStage = null; // 다음 스테이지의 데이터
@@ -56,15 +57,15 @@ class Score {
   }
 
   reset() {
+    this.highScore = getHighScore();
     this.score = 0;
     this.currentStage = this.stages[1000];
     this.updateNextStage();
   }
 
   setHighScore() {
-    const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
-    if (this.score > highScore) {
-      localStorage.setItem(this.HIGH_SCORE_KEY, Math.floor(this.score));
+    if (this.score > this.highScore) {
+      this.highScore = getHighScore();
     }
   }
 
@@ -77,7 +78,6 @@ class Score {
   }
 
   draw() {
-    const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
     const y = 20 * this.scaleRatio;
 
     const fontSize = 20 * this.scaleRatio;
@@ -88,7 +88,7 @@ class Score {
     const highScoreX = scoreX - 125 * this.scaleRatio;
 
     const scorePadded = Math.floor(this.score).toString().padStart(6, 0);
-    const highScorePadded = highScore.toString().padStart(6, 0);
+    const highScorePadded = this.highScore.toString().padStart(6, 0);
 
     this.ctx.fillText(scorePadded, scoreX, y);
     this.ctx.fillText(`HI ${highScorePadded}`, highScoreX, y);
