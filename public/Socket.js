@@ -6,7 +6,7 @@ let userId = storageUserId;
 let highScore = 0;
 let serverHighScore = 0;
 
-socket = io('http://localhost:3000', {
+socket = io('52.79.166.57:3000', {
   query: {
     clientVersion: CLIENT_VERSION,
     userUUID: storageUserId || null,
